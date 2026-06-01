@@ -58,6 +58,8 @@ namespace WPFpractice
             {
                 MessageBox.Show(ex.Message);
             }
+
+            MessageBox.Show("Git Test");
         }
     }
 
