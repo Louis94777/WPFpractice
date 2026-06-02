@@ -19,6 +19,11 @@ namespace WPFpractice
 
     public partial class MainWindow : Window
     {
+        private string connString =
+            @"Server=.\SQLEXPRESS;
+             Database=HospitalDB;
+             Trusted_Connection=True;
+             TrustServerCertificate=True;";
         public MainWindow()
         {
            InitializeComponent();
@@ -37,15 +42,26 @@ namespace WPFpractice
                 {
                     conn.Open();
 
-                    string sql =
-                        "SELECT * FROM Patients WHERE PatNo = @PatNo";
+                    string sql;
 
-                    SqlDataAdapter da =
-                        new SqlDataAdapter(sql, conn);
+                    SqlDataAdapter da;
 
-                    da.SelectCommand.Parameters.AddWithValue(
-                        "@PatNo",
-                        txtPatNo.Text.Trim());
+                    if (string.IsNullOrWhiteSpace(txtPatNo.Text))
+                    {
+                        sql = "SELECT * FROM Patients";
+
+                        da = new SqlDataAdapter(sql, conn);
+                    }
+                    else
+                    {
+                        sql = "SELECT * FROM Patients WHERE PatNo = @PatNo";
+
+                        da = new SqlDataAdapter(sql, conn);
+
+                        da.SelectCommand.Parameters.AddWithValue(
+                            "@PatNo",
+                            txtPatNo.Text.Trim());
+                    }   
 
                     DataTable dt = new DataTable();
 
@@ -61,6 +77,115 @@ namespace WPFpractice
 
             MessageBox.Show("Git Test");
         }
+        private void BtnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            string connString =
+                @"Server=.\SQLEXPRESS;
+          Database=HospitalDB;
+          Trusted_Connection=True;
+          TrustServerCertificate=True;";
+
+            using (SqlConnection conn =
+                   new SqlConnection(connString))
+            {
+                conn.Open();
+
+                string sql = @"
+        INSERT INTO Patients
+        (
+            PatNo,
+            Name
+        )
+        VALUES
+        (
+            @PatNo,
+            @Name
+        )";
+
+                SqlCommand cmd =
+                    new SqlCommand(sql, conn);
+
+                cmd.Parameters.AddWithValue(
+                    "@PatNo",
+                    txtPatNo.Text.Trim());
+
+                cmd.Parameters.AddWithValue(
+                    "@Name",
+                    txtName.Text.Trim());
+
+                cmd.ExecuteNonQuery();
+
+                MessageBox.Show("新增成功");
+            }
+        }
+        private void BtnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            using (SqlConnection conn =
+                   new SqlConnection(connString))
+            {
+                conn.Open();
+
+                string sql =
+                    @"UPDATE Patients
+              SET Name=@Name
+              WHERE PatNo=@PatNo";
+
+                SqlCommand cmd =
+                    new SqlCommand(sql, conn);
+
+                cmd.Parameters.AddWithValue("@PatNo",
+                    txtPatNo.Text.Trim());
+
+                cmd.Parameters.AddWithValue("@Name",
+                    txtName.Text.Trim());
+
+                cmd.ExecuteNonQuery();
+
+                MessageBox.Show("修改成功");
+            }
+        }
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show(
+                "確定刪除？",
+                "確認",
+                MessageBoxButton.YesNo)
+                != MessageBoxResult.Yes)
+                return;
+
+            using (SqlConnection conn =
+                   new SqlConnection(connString))
+            {
+                conn.Open();
+
+                string sql =
+                    "DELETE FROM Patients WHERE PatNo=@PatNo";
+
+                SqlCommand cmd =
+                    new SqlCommand(sql, conn);
+
+                cmd.Parameters.AddWithValue("@PatNo",
+                    txtPatNo.Text.Trim());
+
+                cmd.ExecuteNonQuery();
+
+                MessageBox.Show("刪除成功");    
+            }
+        }
+        private void dgPatients_SelectionChanged(
+            object sender,
+            SelectionChangedEventArgs e)
+                {
+                    if (dgPatients.SelectedItem is DataRowView row)
+                    {
+                        txtPatNo.Text =
+                            row["PatNo"].ToString();
+
+                        txtName.Text =
+                            row["Name"].ToString();
+                    }
+                }
     }
+
 
 }

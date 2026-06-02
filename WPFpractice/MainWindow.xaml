@@ -14,25 +14,45 @@
         </Grid.RowDefinitions>
 
         <!-- 上方查詢區 -->
-        <StackPanel Orientation="Horizontal"
-                    Margin="0,0,0,10">
+        <StackPanel Margin="20">
 
-            <Label Content="病歷號："
-                   VerticalAlignment="Center"/>
+            <TextBlock Text="病歷號"/>
+            <TextBox Name="txtPatNo"/>
 
-            <TextBox x:Name="txtPatNo"
-                     Width="200"
-                     Margin="5,0,10,0"/>
+            <TextBlock Text="姓名"/>
+            <TextBox Name="txtName"/>
 
-            <Button Content="查詢"
-                    Width="80"
-                    Click="BtnSearch_Click"/>
+            <StackPanel Orientation="Horizontal"
+        Margin="0,10,0,10">
+
+                <Button Content="查詢"
+        Width="80"
+        Margin="5"
+        Click="BtnSearch_Click"/>
+
+                <Button Content="新增"
+        Width="80"
+        Margin="5"
+        Click="BtnAdd_Click"/>
+
+                <Button Content="修改"
+        Width="80"
+        Margin="5"
+        Click="BtnUpdate_Click"/>
+
+                <Button Content="刪除"
+        Width="80"
+        Margin="5"
+        Click="BtnDelete_Click"/>
+            </StackPanel>
+
+            <DataGrid Name="dgPatients"
+         Height="250"
+         SelectionChanged="dgPatients_SelectionChanged"/>
 
         </StackPanel>
 
         <!-- 下方資料表 -->
-        <DataGrid x:Name="dgPatients"
-                  Grid.Row="1"/>
 
     </Grid>
 </Window>
