@@ -62,12 +62,6 @@ namespace WPFpractice
         {
             try
             {
-                string connString =
-                    @"Server=.\SQLEXPRESS;
-                     Database=HospitalDB;
-                     Trusted_Connection=True;
-                     TrustServerCertificate=True;";
-
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
                     conn.Open();
@@ -119,11 +113,7 @@ namespace WPFpractice
         }
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            string connString =
-                @"Server=.\SQLEXPRESS;
-          Database=HospitalDB;
-          Trusted_Connection=True;
-          TrustServerCertificate=True;";
+            
 
             using (SqlConnection conn =
                    new SqlConnection(connString))
@@ -131,16 +121,10 @@ namespace WPFpractice
                 conn.Open();
 
                 string sql = @"
-        INSERT INTO Patients
-        (
-            PatNo,
-            Name
-        )
-        VALUES  
-        (
-            @PatNo,
-            @Name
-        )";
+                    INSERT INTO Patients
+                    ( PatNo, Name )
+                    VALUES  
+                    ( @PatNo, @Name )";
 
                 SqlCommand cmd =
                     new SqlCommand(sql, conn);
@@ -169,8 +153,8 @@ namespace WPFpractice
 
                 string sql =
                     @"UPDATE Patients
-              SET Name=@Name
-              WHERE PatNo=@PatNo";
+                    SET Name=@Name
+                    WHERE PatNo=@PatNo";
 
                 SqlCommand cmd =
                     new SqlCommand(sql, conn);
@@ -219,19 +203,120 @@ namespace WPFpractice
             }
         }
         private void dgPatients_SelectionChanged(
-            object sender,
-            SelectionChangedEventArgs e)
-                {
-                    if (dgPatients.SelectedItem is DataRowView row)
-                    {
-                        txtPatNo.Text =
-                            row["PatNo"].ToString();
+    object sender,
+    SelectionChangedEventArgs e)
+        {
+            if (dgPatients.SelectedItem is DataRowView row)
+            {
+                txtPatNo.Text =
+                    row["PatNo"].ToString();
 
-                        txtName.Text =
-                            row["Name"].ToString();
-                    }
-                }
+                txtName.Text =
+                    row["Name"].ToString();
+
+                LoadVisits(
+                    row["PatNo"].ToString());
+            }
+        }
+        private void LoadVisits(string patNo)
+        {
+            MessageBox.Show("PatNo=" + patNo);
+
+            using (SqlConnection conn =
+                new SqlConnection(connString))
+            {
+                conn.Open();
+
+                string sql =
+                    @"SELECT
+                VisitID,
+                VisitDate,
+                Doctor
+              FROM Visits
+              WHERE PatNo = @PatNo";
+
+                SqlDataAdapter da =
+                    new SqlDataAdapter(sql, conn);
+
+                da.SelectCommand.Parameters.AddWithValue(
+                    "@PatNo",
+                    patNo);
+
+                DataTable dt = new DataTable();
+
+                da.Fill(dt);
+
+                MessageBox.Show("筆數=" + dt.Rows.Count);
+
+                dgVisits.ItemsSource = dt.DefaultView;
+            }
+        }
+        private void BtnAddVisit_Click(
+    object sender,
+    RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtPatNo.Text))
+            {
+                MessageBox.Show("請先選擇病患");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtDoctor.Text))
+            {
+                MessageBox.Show("請輸入醫師姓名");
+                return;
+            }
+
+            if (dpVisitDate.SelectedDate == null)
+            {
+                MessageBox.Show("請選擇看診日期");
+                return;
+            }
+
+            using (SqlConnection conn =
+                new SqlConnection(connString))
+            {
+                conn.Open();
+
+                string sql =
+                    @"INSERT INTO Visits
+              (
+                  PatNo,
+                  VisitDate,
+                  Doctor
+              )
+              VALUES
+              (
+                  @PatNo,
+                  @VisitDate,
+                  @Doctor
+              )";
+
+                SqlCommand cmd =
+                    new SqlCommand(sql, conn);
+
+                cmd.Parameters.AddWithValue(
+                    "@PatNo",
+                    txtPatNo.Text.Trim());
+
+                cmd.Parameters.AddWithValue(
+                    "@VisitDate",
+                    dpVisitDate.SelectedDate.Value);
+
+                cmd.Parameters.AddWithValue(
+                    "@Doctor",
+                    txtDoctor.Text.Trim());
+
+                cmd.ExecuteNonQuery();
+
+                MessageBox.Show("新增看診成功");
+                txtDoctor.Text = "";
+                dpVisitDate.SelectedDate = DateTime.Today;
+
+                LoadVisits(txtPatNo.Text.Trim());
+            }
+        }
+    }
     }
 
 
-}

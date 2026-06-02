@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFpractice"
         mc:Ignorable="d"
-        Title="病人查詢系統" Height="450" Width="800">
+        Title="病人查詢系統" Height="700" Width="800">
     <Grid Margin="10">
 
         <Grid.RowDefinitions>
@@ -46,9 +46,31 @@
         Click="BtnDelete_Click"/>
             </StackPanel>
 
+            <TextBlock Text="病患資料"
+           FontWeight="Bold"
+           Margin="0,10,0,5"/>
+
             <DataGrid Name="dgPatients"
-         Height="250"
-         SelectionChanged="dgPatients_SelectionChanged"/>
+          Height="180"
+          SelectionChanged="dgPatients_SelectionChanged"/>
+
+            <TextBlock Text="看診紀錄"
+           FontWeight="Bold"
+           Margin="0,10,0,5"/>
+
+            <TextBlock Text="看診日期"/>
+            <DatePicker Name="dpVisitDate"/>
+
+            <TextBlock Text="醫師"/>
+            <TextBox Name="txtDoctor"/>
+
+            <Button Content="新增看診"
+        Width="100"
+        Margin="5"
+        Click="BtnAddVisit_Click"/>
+
+            <DataGrid Name="dgVisits"
+          Height="180"/>
 
         </StackPanel>
 
