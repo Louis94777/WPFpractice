@@ -73,16 +73,9 @@ namespace WPFpractice
                     conn.Open();
 
                     string sql;
-
                     SqlDataAdapter da;
 
-                    if (string.IsNullOrWhiteSpace(txtPatNo.Text))
-                    {
-                        sql = "SELECT * FROM Patients";
-
-                        da = new SqlDataAdapter(sql, conn);
-                    }
-                    else
+                    if (!string.IsNullOrWhiteSpace(txtPatNo.Text))
                     {
                         sql = "SELECT * FROM Patients WHERE PatNo = @PatNo";
 
@@ -91,7 +84,23 @@ namespace WPFpractice
                         da.SelectCommand.Parameters.AddWithValue(
                             "@PatNo",
                             txtPatNo.Text.Trim());
-                    }   
+                    }
+                    else if (!string.IsNullOrWhiteSpace(txtName.Text))
+                    {
+                        sql = "SELECT * FROM Patients WHERE Name LIKE @Name";
+
+                        da = new SqlDataAdapter(sql, conn);
+
+                        da.SelectCommand.Parameters.AddWithValue(
+                            "@Name",
+                            "%" + txtName.Text.Trim() + "%");
+                    }
+                    else
+                    {
+                        sql = "SELECT * FROM Patients";
+
+                        da = new SqlDataAdapter(sql, conn);
+                    }
 
                     DataTable dt = new DataTable();
 
