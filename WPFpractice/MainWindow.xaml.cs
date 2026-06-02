@@ -251,6 +251,7 @@ namespace WPFpractice
                 dgVisits.ItemsSource = dt.DefaultView;
             }
         }
+        //新增看診記錄
         private void BtnAddVisit_Click(
     object sender,
     RoutedEventArgs e)
