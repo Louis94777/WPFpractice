@@ -18,12 +18,42 @@ namespace WPFpractice
     /// </summary>
 
     public partial class MainWindow : Window
-    {
+    {   
+        //資料庫連接
         private string connString =
             @"Server=.\SQLEXPRESS;
              Database=HospitalDB;
              Trusted_Connection=True;
              TrustServerCertificate=True;";
+        //自動清空輸入內容
+        private void ClearInput()
+        {
+            txtPatNo.Text = "";
+            txtName.Text = "";
+        }
+        //自動刷新功能
+        private void LoadPatients()
+        {
+            using (SqlConnection conn =
+                new SqlConnection(connString))
+            {
+                conn.Open();
+
+                string sql = "SELECT * FROM Patients";
+
+                SqlDataAdapter da =
+                    new SqlDataAdapter(sql, conn);
+
+                DataTable dt = new DataTable();
+
+                da.Fill(dt);
+
+                dgPatients.ItemsSource =
+                    dt.DefaultView;
+            }
+        }
+
+
         public MainWindow()
         {
            InitializeComponent();
@@ -68,6 +98,7 @@ namespace WPFpractice
                     da.Fill(dt);
 
                     dgPatients.ItemsSource = dt.DefaultView;
+                        
                 }
             }
             catch (Exception ex)
@@ -96,7 +127,7 @@ namespace WPFpractice
             PatNo,
             Name
         )
-        VALUES
+        VALUES  
         (
             @PatNo,
             @Name
@@ -116,6 +147,8 @@ namespace WPFpractice
                 cmd.ExecuteNonQuery();
 
                 MessageBox.Show("新增成功");
+                LoadPatients();
+                ClearInput();
             }
         }
         private void BtnUpdate_Click(object sender, RoutedEventArgs e)
@@ -142,6 +175,8 @@ namespace WPFpractice
                 cmd.ExecuteNonQuery();
 
                 MessageBox.Show("修改成功");
+                LoadPatients();
+                ClearInput();
             }
         }
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
@@ -169,7 +204,9 @@ namespace WPFpractice
 
                 cmd.ExecuteNonQuery();
 
-                MessageBox.Show("刪除成功");    
+                MessageBox.Show("刪除成功");
+                LoadPatients();
+                ClearInput();
             }
         }
         private void dgPatients_SelectionChanged(
