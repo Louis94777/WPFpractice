@@ -25,39 +25,38 @@ namespace WPFpractice
              Database=HospitalDB;
              Trusted_Connection=True;
              TrustServerCertificate=True;";
+
         //自動清空輸入內容
         private void ClearInput()
         {
             txtPatNo.Text = "";
             txtName.Text = "";
         }
+
         //自動刷新功能
         private void LoadPatients()
         {
-            using (SqlConnection conn =
-                new SqlConnection(connString))
+            using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
 
                 string sql = "SELECT * FROM Patients";
 
-                SqlDataAdapter da =
-                    new SqlDataAdapter(sql, conn);
+                SqlDataAdapter da =  new SqlDataAdapter(sql, conn);
 
                 DataTable dt = new DataTable();
 
                 da.Fill(dt);
 
-                dgPatients.ItemsSource =
-                    dt.DefaultView;
+                dgPatients.ItemsSource = dt.DefaultView;
             }
         }
-
 
         public MainWindow()
         {
            InitializeComponent();
         }
+
         private void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -71,27 +70,32 @@ namespace WPFpractice
 
                     if (!string.IsNullOrWhiteSpace(txtPatNo.Text))
                     {
-                        sql = "SELECT * FROM Patients WHERE PatNo = @PatNo";
+                        sql = 
+                            "SELECT * " +
+                            "FROM Patients " +
+                            "WHERE PatNo = @PatNo ";
 
                         da = new SqlDataAdapter(sql, conn);
 
-                        da.SelectCommand.Parameters.AddWithValue(
-                            "@PatNo",
-                            txtPatNo.Text.Trim());
+                        da.SelectCommand.Parameters.AddWithValue("@PatNo", txtPatNo.Text.Trim());
                     }
                     else if (!string.IsNullOrWhiteSpace(txtName.Text))
                     {
-                        sql = "SELECT * FROM Patients WHERE Name LIKE @Name";
+                        sql = 
+                            "SELECT * " +
+                            "FROM Patients " +
+                            "WHERE Name " +
+                            "LIKE @Name ";
 
                         da = new SqlDataAdapter(sql, conn);
 
-                        da.SelectCommand.Parameters.AddWithValue(
-                            "@Name",
-                            "%" + txtName.Text.Trim() + "%");
+                        da.SelectCommand.Parameters.AddWithValue("@Name", "%" + txtName.Text.Trim() + "%");
                     }
                     else
                     {
-                        sql = "SELECT * FROM Patients";
+                        sql = 
+                            "SELECT * " +
+                            "FROM Patients ";
 
                         da = new SqlDataAdapter(sql, conn);
                     }
@@ -111,31 +115,24 @@ namespace WPFpractice
 
             MessageBox.Show("Git Test");
         }
-        private void BtnAdd_Click(object sender, RoutedEventArgs e)
-        {
-            
 
-            using (SqlConnection conn =
-                   new SqlConnection(connString))
+        private void BtnAdd_Click(object sender, RoutedEventArgs e)
+        {          
+            using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
 
-                string sql = @"
-                    INSERT INTO Patients
-                    ( PatNo, Name )
-                    VALUES  
-                    ( @PatNo, @Name )";
+                string sql = 
+                    @"
+                    INSERT INTO 
+                    Patients( PatNo, Name )  
+                    VALUES( @PatNo, @Name )";
 
-                SqlCommand cmd =
-                    new SqlCommand(sql, conn);
+                SqlCommand cmd = new SqlCommand(sql, conn);
 
-                cmd.Parameters.AddWithValue(
-                    "@PatNo",
-                    txtPatNo.Text.Trim());
+                cmd.Parameters.AddWithValue("@PatNo", txtPatNo.Text.Trim());
 
-                cmd.Parameters.AddWithValue(
-                    "@Name",
-                    txtName.Text.Trim());
+                cmd.Parameters.AddWithValue("@Name", txtName.Text.Trim());
 
                 cmd.ExecuteNonQuery();
 
@@ -146,8 +143,7 @@ namespace WPFpractice
         }
         private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            using (SqlConnection conn =
-                   new SqlConnection(connString))
+            using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
 
@@ -156,14 +152,11 @@ namespace WPFpractice
                     SET Name=@Name
                     WHERE PatNo=@PatNo";
 
-                SqlCommand cmd =
-                    new SqlCommand(sql, conn);
+                SqlCommand cmd = new SqlCommand(sql, conn);
 
-                cmd.Parameters.AddWithValue("@PatNo",
-                    txtPatNo.Text.Trim());
+                cmd.Parameters.AddWithValue("@PatNo", txtPatNo.Text.Trim());
 
-                cmd.Parameters.AddWithValue("@Name",
-                    txtName.Text.Trim());
+                cmd.Parameters.AddWithValue("@Name",  txtName.Text.Trim());
 
                 cmd.ExecuteNonQuery();
 
@@ -174,26 +167,21 @@ namespace WPFpractice
         }
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show(
-                "確定刪除？",
-                "確認",
-                MessageBoxButton.YesNo)
-                != MessageBoxResult.Yes)
+            if (MessageBox.Show("確定刪除？", "確認", MessageBoxButton.YesNo)!= MessageBoxResult.Yes)
                 return;
 
-            using (SqlConnection conn =
-                   new SqlConnection(connString))
+            using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
 
-                string sql =
-                    "DELETE FROM Patients WHERE PatNo=@PatNo";
+                string sql = 
+                    "DELETE " +
+                    "FROM Patients " +
+                    "WHERE PatNo=@PatNo ";
 
-                SqlCommand cmd =
-                    new SqlCommand(sql, conn);
+                SqlCommand cmd = new SqlCommand(sql, conn);
 
-                cmd.Parameters.AddWithValue("@PatNo",
-                    txtPatNo.Text.Trim());
+                cmd.Parameters.AddWithValue("@PatNo", txtPatNo.Text.Trim());
 
                 cmd.ExecuteNonQuery();
 
@@ -202,9 +190,8 @@ namespace WPFpractice
                 ClearInput();
             }
         }
-        private void dgPatients_SelectionChanged(
-    object sender,
-    SelectionChangedEventArgs e)
+
+        private void dgPatients_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dgPatients.SelectedItem is DataRowView row)
             {
@@ -218,29 +205,26 @@ namespace WPFpractice
                     row["PatNo"].ToString());
             }
         }
+
         private void LoadVisits(string patNo)
         {
             MessageBox.Show("PatNo=" + patNo);
 
-            using (SqlConnection conn =
-                new SqlConnection(connString))
+            using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
 
                 string sql =
                     @"SELECT
-                VisitID,
-                VisitDate,
-                Doctor
-              FROM Visits
-              WHERE PatNo = @PatNo";
+                    VisitID,
+                    VisitDate,
+                    Doctor
+                    FROM Visits
+                    WHERE PatNo = @PatNo";
 
-                SqlDataAdapter da =
-                    new SqlDataAdapter(sql, conn);
+                SqlDataAdapter da = new SqlDataAdapter(sql, conn);
 
-                da.SelectCommand.Parameters.AddWithValue(
-                    "@PatNo",
-                    patNo);
+                da.SelectCommand.Parameters.AddWithValue("@PatNo", patNo);
 
                 DataTable dt = new DataTable();
 
@@ -252,9 +236,7 @@ namespace WPFpractice
             }
         }
         //新增看診記錄
-        private void BtnAddVisit_Click(
-    object sender,
-    RoutedEventArgs e)
+        private void BtnAddVisit_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtPatNo.Text))
             {
@@ -274,39 +256,32 @@ namespace WPFpractice
                 return;
             }
 
-            using (SqlConnection conn =
-                new SqlConnection(connString))
+            using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
 
                 string sql =
                     @"INSERT INTO Visits
-              (
-                  PatNo,
-                  VisitDate,
-                  Doctor
-              )
-              VALUES
-              (
-                  @PatNo,
-                  @VisitDate,
-                  @Doctor
-              )";
+                    (
+                         PatNo,
+                         VisitDate,
+                         Doctor
+                    )
+                    VALUES
+                    (
+                        @PatNo,
+                        @VisitDate,
+                        @Doctor
+                    )";
 
                 SqlCommand cmd =
                     new SqlCommand(sql, conn);
 
-                cmd.Parameters.AddWithValue(
-                    "@PatNo",
-                    txtPatNo.Text.Trim());
+                cmd.Parameters.AddWithValue("@PatNo", txtPatNo.Text.Trim());
 
-                cmd.Parameters.AddWithValue(
-                    "@VisitDate",
-                    dpVisitDate.SelectedDate.Value);
+                cmd.Parameters.AddWithValue("@VisitDate", dpVisitDate.SelectedDate.Value);
 
-                cmd.Parameters.AddWithValue(
-                    "@Doctor",
-                    txtDoctor.Text.Trim());
+                cmd.Parameters.AddWithValue("@Doctor", txtDoctor.Text.Trim());
 
                 cmd.ExecuteNonQuery();
 
